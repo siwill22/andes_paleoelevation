@@ -185,7 +185,10 @@ def timeslice_plot(df, reconstruction_time,
     df_filt_r = geochem_timeslice(df, reconstruction_time, time_bin_size, calibration=calibration,
                                   reconstruction_model=reconstruction_model, anchor_plate_id=anchor_plate_id)
     
-    elevation_estimates = joy.get_elevations(df_filt_r, gc_interpolator_dict=gc_interpolator_dict)
+    elevation_estimates = joy.get_elevations(df_filt_r, 
+                                             gc_interpolator_dict=gc_interpolator_dict,
+                                             calibration=calibration,
+                                             mohometer_selection=mohometer_selection)
     
     binned_df = joy.bin_elevations(df_filt_r.geometry, elevation_estimates, space_bin_size)
     #binned_df = binned_elevation_estimates(df_filt_r, gc_interpolator_dict, space_bin_size)
