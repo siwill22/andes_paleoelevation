@@ -292,11 +292,13 @@ def get_elevations(df, gc_interpolator_dict=None, calibration='luffi', mohometer
     the estimated elevations
     '''
     print('TODO implement min/max elevation cutoffs')
-    if gc_interpolator_dict is not None:
+    if calibration in ['Hu', 'FarnerLee']:
+        elevation_estimates = get_two_elevations(df, calibration=calibration, elevation_min=elevation_min, elevation_max=elevation_max)
+    elif calibration == 'luffi':
+        if gc_interpolator_dict is None:
+            ValueError('Interpolator dictionary must be supplied for luffi calibration')
         elevation_estimates = get_luffi_elevations(df, gc_interpolator_dict, 
                                                    elevation_min=elevation_min, elevation_max=elevation_max)
-    elif calibration in ['Hu', 'FarnerLee']:
-        elevation_estimates = get_two_elevations(df, calibration=calibration, elevation_min=elevation_min, elevation_max=elevation_max)
     else:
         ValueError('Unknown calibration')
 
