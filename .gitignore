@@ -157,9 +157,5 @@ boschman/grids/*
 */.DS_Store
 */*/.DS_Store
 */*/*/.DS_Store
-boschman/reconstruction_model/reconstructed_0.00Ma.dbf
-boschman/reconstruction_model/reconstructed_0.00Ma.prj
-boschman/reconstruction_model/reconstructed_0.00Ma.shp
-boschman/reconstruction_model/reconstructed_0.00Ma.shp.gplates.xml
-boschman/reconstruction_model/reconstructed_0.00Ma.shx
+
 images/*
