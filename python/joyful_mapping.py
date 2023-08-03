@@ -167,15 +167,20 @@ def binned_elevation_estimates(df_filt_r, mohometer_selection, gc_interpolator_d
 
 def timeslice_plot(df, reconstruction_time,
                    time_bin_size, space_bin_size, 
-                   fig, raster_sequence, reconstruction_model, anchor_plate_id=0,
+                   fig, raster_sequence, reconstruction_model, 
+                   anchor_plate_id=0, raster_anchor_plate_id=None,
                    calibration='luffi', mohometer_selection=None, gc_interpolator_dict=None,
                    residuals=False, volcanics=False, return_type=False,
                    region='d', projection='M15c',perspective=None):
+
+    if raster_anchor_plate_id is None:
+        raster_anchor_plate_id = anchor_plate_id
     
     filtered_topo = pygmt.grdfilter(to_anchor_plate(raster_sequence[reconstruction_time], 
                                                    reconstruction_model, 
                                                    reconstruction_time, 
                                                    anchor_plate_id, 
+                                                   old_anchor_plate_id=raster_anchor_plate_id,
                                                    region=region, spacing=0.2),
                                    distance='4',
                                    filter='m250+g0.5',
