@@ -94,14 +94,13 @@ def plot_elevation_basemap(fig, grid, cmap='hot',
     
 
         
-def add_labels(fig, reconstruction_time, time_bin_size, add_colorbar=False):
-
-    fig.text(x=0.15,y=1.25,text='{:0.1f}-{:0.1f} Ma'.format(reconstruction_time-time_bin_size/2.,reconstruction_time+time_bin_size/2.),
-                 region='0/1/0/1', projection='x10c', font='24p', no_clip=True)
+def add_labels(fig, reconstruction_time, add_colorbar=False, colorbar_title='Elevation [m]'):
     
+    fig.text(x=2.5,y=1.15,text='{:0.0f} Ma'.format(reconstruction_time),
+             region='0/1/0/1', projection='x10c', font='48p', no_clip=True)
     if add_colorbar:
         with pygmt.config(FONT_ANNOT_PRIMARY='16p', FONT_LABEL='24p'):
-            fig.colorbar(position='JBL+jBL+o0.5c/1.5c+w12c/0.8c+h', frame=['x+lElevation [m]'])
+            fig.colorbar(position='JBL+jBL+o0.5c/1.5c+w12c/0.8c+h', frame=['x+l{:s}'.format(colorbar_title)])
 
     return
 
