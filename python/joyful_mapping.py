@@ -27,14 +27,17 @@ def select_orogens(df, gdf=None, orogen_names=None, continent_names=None, region
         gdf = Geology.fetch_GlobalTectonicMap()
     
     if continent_names is not None:
+        if isinstance(continent_names, list):
+            continent_names = '|'.join(continent_names)
         gdf = gdf[gdf['continent'].str.contains(continent_names, na=False)]
          
     if orogen_names is not None:
+        if isinstance(orogen_names, list):
+            orogen_names = '|'.join(orogen_names)
         gdf = gdf[gdf['lastorogen'].str.contains(orogen_names, na=False)]
 
     if region is not None:
         gdf = gdf.cx[region[0]:region[1], region[2]:region[3]]
-    #terra_australis = terra_australis.cx[-100:-50, -60:20]
 
     return df.clip(gdf)
 
