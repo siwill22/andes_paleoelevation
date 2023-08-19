@@ -80,14 +80,15 @@ def plot_volcanics(fig, volcanics, time_min, time_max,
 
 
 
-def plot_elevation_basemap(fig, grid, cmap='hot', 
+def plot_elevation_basemap(fig, grid=None, cmap='hot', 
                            region='d', projection='M10c', perspective=[240, 35], coastlines=True):
     
 
     fig.basemap(region=region, projection=projection, perspective=perspective, frame='afg')
 
-    pygmt.makecpt(cmap=cmap, series=[-1000,5000,500], background='o', reverse=True)
-    fig.grdimage(grid=grid, cmap=True, projection=projection, perspective=perspective, transparency=30, nan_transparent=True)
+    if grid is not None:
+        pygmt.makecpt(cmap=cmap, series=[-1000,5000,500], background='o', reverse=True)
+        fig.grdimage(grid=grid, cmap=True, projection=projection, perspective=perspective, transparency=30, nan_transparent=True)
     
     if coastlines:
         fig.coast(shorelines='1p,gray', transparency=60, projection=projection, perspective=perspective)
@@ -166,25 +167,15 @@ def binned_elevation_estimates(df_filt_r, mohometer_selection, gc_interpolator_d
 
 def timeslice_plot(df, reconstruction_time,
                    time_bin_size, space_bin_size, 
-                   fig, raster_sequence, reconstruction_model, 
+                   fig, reconstruction_model, raster_sequence=None,  
                    anchor_plate_id=0, raster_anchor_plate_id=None,
                    calibration='luffi', mohometer_selection=None, gc_interpolator_dict=None,
                    residuals=False, volcanics=False, return_type=False,
+                   column_marker_size='0.3c', plot_basemap=True, coastlines=True,
                    region='d', projection='M15c',perspective=None):
 
     if raster_anchor_plate_id is None:
         raster_anchor_plate_id = anchor_plate_id
-    
-    filtered_topo = pygmt.grdfilter(to_anchor_plate(raster_sequence[reconstruction_time], 
-                                                   reconstruction_model, 
-                                                   reconstruction_time, 
-                                                   anchor_plate_id, 
-                                                   old_anchor_plate_id=raster_anchor_plate_id,
-                                                   region=region, spacing=0.2),
-                                   distance='4',
-                                   filter='m250+g0.5',
-                                   spacing=0.25,
-                                   coltypes='g')
     
     df_filt_r = geochem_timeslice(df, reconstruction_time, time_bin_size, calibration=calibration,
                                   reconstruction_model=reconstruction_model, anchor_plate_id=anchor_plate_id)
@@ -197,8 +188,23 @@ def timeslice_plot(df, reconstruction_time,
     binned_df = joy.bin_elevations(df_filt_r.geometry, elevation_estimates, space_bin_size)
     #binned_df = binned_elevation_estimates(df_filt_r, gc_interpolator_dict, space_bin_size)
     
-    plot_elevation_basemap(fig, filtered_topo, cmap='cubhelix',
-                           region=region, projection=projection, perspective=perspective)
+    if raster_sequence is not None:
+        filtered_topo = pygmt.grdfilter(to_anchor_plate(raster_sequence[reconstruction_time], 
+                                                    reconstruction_model, 
+                                                    reconstruction_time, 
+                                                    anchor_plate_id, 
+                                                    old_anchor_plate_id=raster_anchor_plate_id,
+                                                    region=region, spacing=0.2),
+                                    distance='4',
+                                    filter='m250+g0.5',
+                                    spacing=0.25,
+                                    coltypes='g')
+    else:
+        filtered_topo = None
+
+    if plot_basemap:
+        plot_elevation_basemap(fig, filtered_topo, cmap='cubhelix',
+                               region=region, projection=projection, perspective=perspective, coastlines=coastlines)
     
     if volcanics is not None:
         plot_volcanics(fig, 
@@ -233,7 +239,7 @@ def timeslice_plot(df, reconstruction_time,
 
         else:
             plot_elevations_as_columns(fig, binned_df, cmap='cubhelix',
-                                       column_marker_size='0.17c', column_pen='0.2p,black',
+                                       column_marker_size=column_marker_size, column_pen='0.2p,black',
                                        column_delta_height=500, #300,
                                        region=region, projection=projection, perspective=perspective)
 
