@@ -7,10 +7,18 @@ from scipy.interpolate import RegularGridInterpolator
 from scipy.stats import median_abs_deviation
 
 
-def geochem_from_csv(csvfile):
+def geochem_from_csv(csvfile,
+                     longitude_field_name=None,
+                     latitude_field_name=None):
 
     df = pd.read_csv(csvfile)
-    df = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.Longitude, df.Latitude), crs=4326)
+ 
+    #if (longitude_field_name is not None) | (latitude_field_name is not None):
+    #    df.rename(columns={longitude_field_name: 'Longitude',
+    #                       latitude_field_name: 'Latitude'})
+
+    df = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df[longitude_field_name], 
+                                                          df[latitude_field_name]), crs=4326)
     return compute_ratios(df, long_list=True)
 
 '''
