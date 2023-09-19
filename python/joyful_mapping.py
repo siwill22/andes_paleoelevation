@@ -150,6 +150,9 @@ def geochem_timeslice(df, reconstruction_time, time_bin_size,
                                       age_min=reconstruction_time-time_bin_size/2., 
                                       age_max=reconstruction_time+time_bin_size/2.)
     
+    if df_filt.empty:
+        return None
+    
     if reconstruction_model is not None:
         df_filt_r = reconstruct(df_filt, reconstruction_model, reconstruction_time=reconstruction_time, 
                                 anchor_plate_id=anchor_plate_id)
@@ -183,13 +186,19 @@ def timeslice_plot(df, reconstruction_time,
     df_filt_r = geochem_timeslice(df, reconstruction_time, time_bin_size, calibration=calibration,
                                   reconstruction_model=reconstruction_model, anchor_plate_id=anchor_plate_id)
     
-    elevation_estimates = joy.get_elevations(df_filt_r, 
-                                             gc_interpolator_dict=gc_interpolator_dict,
-                                             calibration=calibration,
-                                             mohometer_selection=mohometer_selection)
-    
-    binned_df = joy.bin_elevations(df_filt_r.geometry, elevation_estimates, space_bin_size)
-    #binned_df = binned_elevation_estimates(df_filt_r, gc_interpolator_dict, space_bin_size)
+    if df_filt_r is not None:
+        elevation_estimates = joy.get_elevations(df_filt_r, 
+                                                gc_interpolator_dict=gc_interpolator_dict,
+                                                calibration=calibration,
+                                                mohometer_selection=mohometer_selection)
+        
+        binned_df = joy.bin_elevations(df_filt_r.geometry, elevation_estimates, space_bin_size)
+        #binned_df = binned_elevation_estimates(df_filt_r, gc_interpolator_dict, space_bin_size)
+    else:
+        binned_df = []
+        elevation_estimates = []
+        residuals_bdf = []
+        elevations_residuals = []
     
     if raster_sequence is not None:
         filtered_topo = pygmt.grdfilter(to_anchor_plate(raster_sequence[reconstruction_time], 
@@ -353,16 +362,18 @@ def residuals_crossplot(binned_df, residuals_bdf, fname):
     
     fig,ax = plt.subplots(figsize=(6,4.5))
     ax.plot([-1000,8000],[-1000,8000], 'k-')
-    ax.scatter(binned_df.median_elevation-residuals_bdf.median_elevation, binned_df.median_elevation,
-               c=residuals_bdf.median_elevation, vmin=-3000, vmax=3000, cmap='seismic', edgecolor='k')
+    if len(binned_df)>0:
+        ax.scatter(binned_df.median_elevation-residuals_bdf.median_elevation, binned_df.median_elevation,
+                   c=residuals_bdf.median_elevation, vmin=-3000, vmax=3000, cmap='seismic', edgecolor='k')
     #plt.bar(bdf.median_elevation,height=residuals_bdf.median_elevation, width=20,color='k')
     ax.grid()
     ax.set_xlabel('DEM Elevation [m]')
     ax.set_ylabel('Elevation Proxy from geochemistry [m]')
     ax.set_xlim(-1000,6000)
     ax.set_ylim(-1000,6000)
-    ax.text(4200,600,'RMS = {:0.1f}m'.format(np.sqrt(residuals_bdf.median_elevation.mean()**2)))
-    ax.text(4200,200,'STD = {:0.1f}m'.format(residuals_bdf.median_elevation.std()))
+    if len(binned_df)>0:
+        ax.text(4200,600,'RMS = {:0.1f}m'.format(np.sqrt(np.mean(residuals_bdf.median_elevation**2))))
+        ax.text(4200,200,'STD = {:0.1f}m'.format(residuals_bdf.median_elevation.std()))
     #ax.set_title('{:s}, {:s}'.format(calibration,mohometer_description_string))
     plt.savefig(fname, bbox_inches='tight')
     plt.close()
