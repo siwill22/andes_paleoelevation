@@ -12,6 +12,11 @@
 - datafiles contains tables of data captured from individual studies and compilations
 
 
+## Requirements
+- The best place to start is the 'Minimal_Example' notebook. This should work without requiring too many exotic modules.
+- More complex examples require specific functions for plotting, raster manipulation reconstructing data. See 'module not found' messages for more information. 
+
+
 ## Method Notes
 
 The code implements calibrations according to three published works
