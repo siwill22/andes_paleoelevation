@@ -191,6 +191,7 @@ def filter_the_database(df, filter_method, nans_to_zeros=True, age_min=-1e9, age
         #print('Number of these samples with mgo >= 4 {:d}'.format(len(df_filt)))
         
     if filter_method in ['Luffi','luffi']:
+        print('TODO implement a specific alkaline/subalkaline boundary')
         df_filt = df_filt.query('`sio2`>=45 & `sio2`<=80')
         #pass
 
