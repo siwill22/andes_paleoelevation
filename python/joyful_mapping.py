@@ -100,13 +100,15 @@ def plot_elevation_basemap(fig, grid=None, cmap='hot',
         
 def add_labels(fig, reconstruction_time,
                x=2.5, y=1.15, font='48p',
-               add_colorbar=False, colorbar_title='Elevation [m]'):
+               add_colorbar=False, 
+               colorbar_position='JBL+jBL+o0.5c/1.5c+w12c/0.8c+h',
+               colorbar_title='Elevation [m]'):
     
     fig.text(x=x ,y=y, text='{:0.0f} Ma'.format(reconstruction_time),
              region='0/1/0/1', projection='x10c', font=font, no_clip=True)
     if add_colorbar:
         with pygmt.config(FONT_ANNOT_PRIMARY='16p', FONT_LABEL='24p'):
-            fig.colorbar(position='JBL+jBL+o0.5c/1.5c+w12c/0.8c+h', frame=['x+l{:s}'.format(colorbar_title)])
+            fig.colorbar(position=colorbar_position, frame=['x+l{:s}'.format(colorbar_title)])
 
     return
 
@@ -239,7 +241,7 @@ def timeslice_plot(df, reconstruction_time,
                                  no_skip=True)['z']
             elevations_residuals = elevation_estimates.sub(DEM, axis=0)
 
-            residuals_bdf = joy.bin_elevations(df_filt_r.geometry, elevations_residuals, bin_size_degrees=1)
+            residuals_bdf = joy.bin_elevations(df_filt_r.geometry, elevations_residuals, bin_size_degrees=space_bin_size)
             #resd = elevations_residuals.drop(columns=['bin_latitude', 'bin_longitude', 'geometry'])
 
             #elevations_residuals = pygmt.grdtrack(points=binned_df,#pd.DataFrame(data={'x':bdf.x,'y':bdf.y}),
@@ -249,7 +251,7 @@ def timeslice_plot(df, reconstruction_time,
             pygmt.makecpt(cmap='polar', series=[-3000,3000,500], background='o')
             fig.plot(x=residuals_bdf.x, y=residuals_bdf.y, 
                      fill=residuals_bdf.median_elevation, # np.array(elevations_residuals.z)-np.array(elevations_residuals.median_elevation), 
-                     style='s0.4c', pen='0.2,black', perspective=perspective, cmap=True)
+                     style='s{:s}'.format(column_marker_size), pen='0.2,black', perspective=perspective, cmap=True)
 
         else:
             plot_elevations_as_columns(fig, binned_df, cmap='cubhelix',
