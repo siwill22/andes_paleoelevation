@@ -481,5 +481,22 @@ def bin_elevations(geometry, elevations_df, bin_size_degrees):
     return binned_df
 
 
+def assign_bin_ages(ages, time_bin_size):
 
+    return (np.round((ages-time_bin_size/2)/time_bin_size)*time_bin_size) + (time_bin_size/2)
+
+
+
+def thickness2elevation(thickness, rho_crust=2.75, rho_mantle=3.3, thickness0=32000):
+    
+    elevation = (1 - rho_crust / rho_mantle) * (thickness-thickness0)
+    
+    return elevation
+
+
+def elevation2thickness(elevation, rho_crust=2.75, rho_mantle=3.3, thickness0=32000):
+
+    thickness = elevation / (1 - rho_crust / rho_mantle)
+    
+    return thickness + thickness0
     
