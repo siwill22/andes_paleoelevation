@@ -16,7 +16,8 @@ def reconstruct(df, reconstruction_model, reconstruction_time, anchor_plate_id=2
     df = reconstruction_model.assign_plate_ids(df)
     df = df.replace(np.nan,-99999.9)
     df_r = reconstruction_model.reconstruct(df, reconstruction_time=reconstruction_time, anchor_plate_id=anchor_plate_id)
-    df_r = df_r.replace(-99999.9,np.nan)
+    if df_r is not None:
+        df_r = df_r.replace(-99999.9,np.nan)
     
     return df_r
 
