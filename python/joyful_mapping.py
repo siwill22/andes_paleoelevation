@@ -116,13 +116,13 @@ def add_labels(fig, reconstruction_time,
 
 def plot_elevations_as_columns(fig, binned_df, cmap='hot',
                                column_delta_height=None, column_marker_size='0.3c', column_pen='0.3p,black',
-                               region='d', projection='M10c', perspective=[240, 35]):
+                               region='d', projection_3d='Z3c', perspective=[240, 35]):
     
     fig.plot3d(x=binned_df.x, 
                y=binned_df.y, 
                z=binned_df.median_elevation, 
                style='O{:s}'.format(column_marker_size), 
-               region=region+[0,6000], projection='Z3c', perspective=perspective, pen=column_pen)
+               region=region+[0,6000], projection=projection_3d, perspective=perspective, pen=column_pen)
 
     pygmt.makecpt(cmap=cmap, series=[-1000,5000,500], background='o', reverse=True)
     if column_delta_height is None:
@@ -133,7 +133,7 @@ def plot_elevations_as_columns(fig, binned_df, cmap='hot',
                                              'z3':binned_df.q25}), # zvalue for the base of the column,
                 style='o{:s}+b'.format(column_marker_size), 
                 cmap=True,
-                region=region+[0,6000], projection='Z3c', perspective=perspective, pen=column_pen)
+                region=region+[0,6000], projection=projection_3d, perspective=perspective, pen=column_pen)
     else:
         fig.plot3d(data = pd.DataFrame(data={'x':binned_df.x, 
                                              'y':binned_df.y, 
@@ -142,7 +142,7 @@ def plot_elevations_as_columns(fig, binned_df, cmap='hot',
                                              'z3':binned_df.median_elevation-column_delta_height}), # zvalue for the base of the column,
                 style='o{:s}+b'.format(column_marker_size), 
                 cmap=True,
-                region=region+[0,6000], projection='Z3c', perspective=perspective, pen=column_pen)
+                region=region+[0,6000], projection=projection_3d, perspective=perspective, pen=column_pen)
     
     return
 
@@ -183,7 +183,8 @@ def timeslice_plot(df, reconstruction_time,
                    calibration='luffi', mohometer_selection=None, gc_interpolator_dict=None,
                    residuals=False, volcanics=False, return_type=False,
                    column_marker_size='0.3c', plot_basemap=True, coastlines=True,
-                   region='d', projection='M15c',perspective=None):
+                   region='d', projection='M15c', 
+                   perspective=None, projection_3d='Z3c'):
 
     if raster_anchor_plate_id is None:
         raster_anchor_plate_id = anchor_plate_id
@@ -250,15 +251,17 @@ def timeslice_plot(df, reconstruction_time,
             #                                      newcolname='z')
             
             pygmt.makecpt(cmap='polar', series=[-3000,3000,500], background='o')
+            residual_marker_size = '{:f}{:s}'.format(np.float(column_marker_size[:-1])*1.5, column_marker_size[-1])
             fig.plot(x=residuals_bdf.x, y=residuals_bdf.y, 
                      fill=residuals_bdf.median_elevation, # np.array(elevations_residuals.z)-np.array(elevations_residuals.median_elevation), 
-                     style='s{:s}'.format(column_marker_size), pen='0.2,black', perspective=perspective, cmap=True)
+                     style='s{:s}'.format(residual_marker_size), pen='0.2,black', perspective=perspective, cmap=True)
 
         else:
             plot_elevations_as_columns(fig, binned_df, cmap='cubhelix',
                                        column_marker_size=column_marker_size, column_pen='0.2p,black',
                                        column_delta_height=500, #300,
-                                       region=region, projection=projection, perspective=perspective)
+                                       region=region, projection=projection, 
+                                       perspective=perspective, projection_3d=projection_3d)
 
     if return_type is not None:
         if return_type=='raw_residuals':
