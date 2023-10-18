@@ -11,9 +11,11 @@ import joyful_geochemistry as joy
 
 
 
-def reconstruct(df, reconstruction_model, reconstruction_time, anchor_plate_id=201):
+def reconstruct(df, reconstruction_model, reconstruction_time, anchor_plate_id=201, valid_time_filter=True):
     
-    df = reconstruction_model.assign_plate_ids(df)
+    df = reconstruction_model.assign_plate_ids(df, copy_valid_times=valid_time_filter)
+    if valid_time_filter:
+        df = df.query('age<=FROMAGE')
     df = df.replace(np.nan,-99999.9)
     df_r = reconstruction_model.reconstruct(df, reconstruction_time=reconstruction_time, anchor_plate_id=anchor_plate_id)
     if df_r is not None:
@@ -260,8 +262,7 @@ def timeslice_plot(df, reconstruction_time,
             plot_elevations_as_columns(fig, binned_df, cmap='cubhelix',
                                        column_marker_size=column_marker_size, column_pen='0.2p,black',
                                        column_delta_height=500, #300,
-                                       region=region, projection=projection, 
-                                       perspective=perspective, projection_3d=projection_3d)
+                                       region=region, perspective=perspective, projection_3d=projection_3d)
 
     if return_type is not None:
         if return_type=='raw_residuals':
