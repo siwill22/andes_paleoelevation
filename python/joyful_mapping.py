@@ -53,7 +53,7 @@ def load_pilger_volcanics(excelfile=None):
     pilger_Igneous = pd.read_excel(excelfile, sheet_name='Igneous-Master')
 
     pilger_Igneous['Longitude'] = pilger_Igneous['Longitude'].astype(str)
-    pilger_Igneous['Longitude'] = pilger_Igneous['Longitude'].str.replace(')','', regex=True)
+    pilger_Igneous['Longitude'] = pilger_Igneous['Longitude'].str.replace("\)",'', regex=True)
     pilger_Igneous['Longitude'] = pilger_Igneous['Longitude'].astype(np.float64)
     pilger_Igneous['Latitude'] = pilger_Igneous['Latitude'].astype(np.float64) #.str.replace('[^\w]','', regex=True)
     pilger_Igneous['Age'] = pd.to_numeric(pilger_Igneous['Age'], errors='coerce')
