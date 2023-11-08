@@ -253,7 +253,7 @@ def timeslice_plot(df, reconstruction_time,
             #                                      newcolname='z')
             
             pygmt.makecpt(cmap='polar', series=[-3000,3000,500], background='o')
-            residual_marker_size = '{:f}{:s}'.format(np.float(column_marker_size[:-1])*1.5, column_marker_size[-1])
+            residual_marker_size = '{:f}{:s}'.format(float(column_marker_size[:-1])*1.5, column_marker_size[-1])
             fig.plot(x=residuals_bdf.x, y=residuals_bdf.y, 
                      fill=residuals_bdf.median_elevation, # np.array(elevations_residuals.z)-np.array(elevations_residuals.median_elevation), 
                      style='s{:s}'.format(residual_marker_size), pen='0.2,black', perspective=perspective, cmap=True)
