@@ -101,14 +101,15 @@ def plot_elevation_basemap(fig, grid=None, cmap='hot',
     
 
         
-def add_labels(fig, reconstruction_time,
+def add_labels(fig, reconstruction_time=None,
                x=2.5, y=1.15, font='48p',
                add_colorbar=False, 
                colorbar_position='JBL+jBL+o0.5c/1.5c+w12c/0.8c+h',
                colorbar_title='Elevation [m]'):
     
-    fig.text(x=x ,y=y, text='{:0.0f} Ma'.format(reconstruction_time),
-             region='0/1/0/1', projection='x10c', font=font, no_clip=True)
+    if reconstruction_time is not None:
+        fig.text(x=x ,y=y, text='{:0.0f} Ma'.format(reconstruction_time),
+                 region='0/1/0/1', projection='x10c', font=font, no_clip=True)
     if add_colorbar:
         with pygmt.config(FONT_ANNOT_PRIMARY='16p', FONT_LABEL='24p'):
             fig.colorbar(position=colorbar_position, frame=['x+l{:s}'.format(colorbar_title)])
@@ -180,7 +181,7 @@ def binned_elevation_estimates(df_filt_r, mohometer_selection, gc_interpolator_d
 
 def timeslice_plot(df, reconstruction_time,
                    time_bin_size, space_bin_size, 
-                   fig, reconstruction_model, raster_sequence=None,  
+                   fig, reconstruction_model=None, raster_sequence=None,  
                    anchor_plate_id=0, raster_anchor_plate_id=None,
                    calibration='luffi', mohometer_selection=None, gc_interpolator_dict=None,
                    residuals=False, volcanics=False, return_type=False,
@@ -209,7 +210,10 @@ def timeslice_plot(df, reconstruction_time,
         elevations_residuals = []
     
     if raster_sequence is not None:
-        filtered_topo = pygmt.grdfilter(to_anchor_plate(raster_sequence[reconstruction_time], 
+        if reconstruction_model is None:
+            filtered_topo = raster_sequence
+        else:
+            filtered_topo = pygmt.grdfilter(to_anchor_plate(raster_sequence[reconstruction_time], 
                                                     reconstruction_model, 
                                                     reconstruction_time, 
                                                     anchor_plate_id, 
