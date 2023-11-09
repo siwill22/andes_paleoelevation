@@ -102,13 +102,17 @@ def plot_elevation_basemap(fig, grid=None, cmap='hot',
 
         
 def add_labels(fig, reconstruction_time=None,
+               label_string=None,
                x=2.5, y=1.15, font='48p',
                add_colorbar=False, 
-               colorbar_position='JBL+jBL+o0.5c/1.5c+w12c/0.8c+h',
+               colorbar_position='JBL+jBL+o0.5c/1.6c+w12c/0.8c+h',
                colorbar_title='Elevation [m]'):
     
     if reconstruction_time is not None:
         fig.text(x=x ,y=y, text='{:0.0f} Ma'.format(reconstruction_time),
+                 region='0/1/0/1', projection='x10c', font=font, no_clip=True)
+    elif label_string is not None:
+        fig.text(x=x ,y=y, text=label_string,
                  region='0/1/0/1', projection='x10c', font=font, no_clip=True)
     if add_colorbar:
         with pygmt.config(FONT_ANNOT_PRIMARY='16p', FONT_LABEL='24p'):
