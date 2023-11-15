@@ -191,8 +191,30 @@ def filter_the_database(df, filter_method, nans_to_zeros=True, age_min=-1e9, age
         #print('Number of these samples with mgo >= 4 {:d}'.format(len(df_filt)))
         
     if filter_method in ['Luffi','luffi']:
-        print('TODO implement a specific alkaline/subalkaline boundary')
+        #print('TODO implement a specific alkaline/subalkaline boundary')
         df_filt = df_filt.query('`sio2`>=45 & `sio2`<=80')
+        
+        #'''
+        # Ref Rickwood
+        # Maximum boundary...
+        #alkaline_boundary = pd.DataFrame(data={'sio2': [40, 45, 50, 55, 60, 65, 70, 100],
+        #                                       'A': [0.45, 2.8, 4.75, 6.5, 8.0, 9.6, 11.1, 19]})
+
+        # Irvine and Baragar 1971 (as defined in Rickwood, 1989)
+        alkaline_boundary  = pd.DataFrame(
+            data={'sio2': [39, 41.56, 43.28, 45.47, 48.18, 51.02, 53.72, 56.58, 60.47, 66.82, 77.15, 100],
+            'A': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12.5]})
+        
+        buffer_percentage = 1.5
+        A_interp = np.interp(df_filt['sio2'], 
+                             alkaline_boundary['sio2'], 
+                             alkaline_boundary['A']+buffer_percentage)
+
+        #A_test = A_interp-df_filt['a']
+
+        df_filt = df_filt.query('`a` < @A_interp')
+        #'''
+
         #pass
 
 
