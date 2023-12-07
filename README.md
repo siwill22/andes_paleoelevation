@@ -1,6 +1,6 @@
 # andes_paleoelevation
 
- Repository to generate maps of paleoelevation from igneous geochemistry, with specific application to the western margin of South America 0-350 Ma
+ Repository containing data and code to reproduce the analysis presented in Liu et al (submitted December 2023). The code generates maps of paleoelevation from igneous geochemistry, with specific application to the western margin of South America 0-350 Ma
 
 
  ## Contents
